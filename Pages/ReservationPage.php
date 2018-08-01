@@ -194,7 +194,7 @@ abstract class ReservationPage extends Page implements IReservationPage
 	public function PageLoad()
 	{
 		$this->presenter->PageLoad();
-		$this->Set('ReturnUrl', $this->GetLastPage(Pages::SCHEDULE));
+		$this->Set('ReturnUrl', $this->GetReturnUrl());
 		$this->Set('ReservationAction', $this->GetReservationAction());
 		$this->Set('MaxUploadSize', UploadedFile::GetMaxSize());
 		$this->Set('MaxUploadCount', UploadedFile::GetMaxUploadCount());
@@ -355,5 +355,10 @@ abstract class ReservationPage extends Page implements IReservationPage
 	public function HideRecurrence($isHidden)
 	{
 		$this->Set('HideRecurrence', $isHidden);
+	}
+
+	protected function GetReturnUrl()
+	{
+		return $this->GetLastPage(Pages::SCHEDULE);
 	}
 }

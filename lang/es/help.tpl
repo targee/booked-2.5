@@ -23,7 +23,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 <h2>Registration</h2>
 
 <p>
-	Registration is required in order to use Booked Scheduler if you administrator has enabled it. After your account
+	Registration is required in order to use Booked Scheduler if your administrator has enabled it. After your account
 	has been registered
 	you will be able to log in and access any resources that you have permission to.
 </p>

@@ -29,6 +29,7 @@ require_once(ROOT_DIR . 'WebServices/Responses/Resource/ResourceStatusReasonsRes
 require_once(ROOT_DIR . 'WebServices/Responses/Resource/ResourceAvailabilityResponse.php');
 require_once(ROOT_DIR . 'WebServices/Responses/Resource/ResourceReference.php');
 require_once(ROOT_DIR . 'WebServices/Responses/Resource/ResourceTypesResponse.php');
+require_once(ROOT_DIR . 'WebServices/Responses/Resource/ResourceGroupsResponse.php');
 
 class ResourcesWebService
 {
@@ -205,6 +206,19 @@ class ResourcesWebService
 		}
 
 		$this->server->WriteResponse(new ResourcesAvailabilityResponse($this->server, $resourceAvailability));
+	}
+
+	/**
+	 * @name GetGroups
+	 * @description Returns the full resource group tree
+	 * @response ResourceGroupsResponse
+	 * @return void
+	 */
+	public function GetGroups()
+	{
+		$groups = $this->resourceRepository->GetResourceGroups();
+
+		$this->server->WriteResponse(new ResourceGroupsResponse($this->server, $groups));
 	}
 
 	/**

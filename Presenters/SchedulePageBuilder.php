@@ -345,11 +345,11 @@ class SchedulePageBuilder implements ISchedulePageBuilder
 
 	public function GetResourceIds($scheduleId, ISchedulePage $page)
 	{
-		$resourceId = $page->GetResourceIds();
+		$resourceIds = $page->GetResourceIds();
 
-		if (!empty($resourceId))
+		if (!empty($resourceIds))
 		{
-			return $resourceId;
+			return $resourceIds;
 		}
 
 		return array();
@@ -405,12 +405,17 @@ class SchedulePageBuilder implements ISchedulePageBuilder
 		}
 		else
 		{
-			$cookie = ServiceLocator::GetServer()
-					  ->GetCookie('resource_filter' . $scheduleId);
+			$cookie = ServiceLocator::GetServer()->GetCookie('resource_filter' . $scheduleId);
 			if (!empty($cookie))
 			{
 				$val = json_decode($cookie);
 				$filter = ScheduleResourceFilter::FromCookie($val);
+			}
+
+			$resourceId = $page->GetResourceId();
+			if (!empty($resourceId))
+			{
+				$filter->ResourceIds = array($resourceId);
 			}
 		}
 

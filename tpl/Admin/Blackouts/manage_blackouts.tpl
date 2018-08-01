@@ -60,7 +60,10 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 					{control type="RecurrenceControl" RepeatTerminationDate=$RepeatTerminationDate}
 				</li>
 				<li>
-					<input {formname key=CONFLICT_ACTION} type="radio" id="notifyExisting" name="existingReservations" checked="checked" value="{ReservationConflictResolution::Notify}" />
+					<input {formname key=CONFLICT_ACTION} type="radio" id="bookAround" name="existingReservations" checked="checked" value="{ReservationConflictResolution::BookAround}" />
+					<label for="notifyExisting">{translate key=BlackoutAroundConflicts}</label>
+
+					<input {formname key=CONFLICT_ACTION} type="radio" id="notifyExisting" name="existingReservations" value="{ReservationConflictResolution::Notify}" />
 					<label for="notifyExisting">{translate key=BlackoutShowMe}</label>
 
 					<input {formname key=CONFLICT_ACTION} type="radio" id="deleteExisting" name="existingReservations" value="{ReservationConflictResolution::Delete}" />

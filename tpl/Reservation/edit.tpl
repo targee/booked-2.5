@@ -29,19 +29,21 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 {block name=deleteButtons}
 	{if $IsRecurring}
 		<a href="#" class="delete prompt">
-			{html_image src="cross-button.png"}
-			{translate key='Delete'}
-		</a>
+            {html_image src="cross-button.png"}
+            {translate key='Delete'}</a>
 	{else}
-		<a href="#" class="delete save">
-			{html_image src="cross-button.png"}
-			{translate key='Delete'}
-		</a>
+		<a href="#" id="triggerDeletePrompt" class="delete prompt-single">
+            {html_image src="cross-button.png"}
+            {translate key='Delete'}</a>
 	{/if}
 
 	<a style='margin-left:10px;' href="{$Path}export/{Pages::CALENDAR_EXPORT}?{QueryStringKeys::REFERENCE_NUMBER}={$ReferenceNumber}">
 		{html_image src="calendar-plus.png"}
 		{translate key=AddToOutlook}</a>
+
+	<a style='margin-left:10px;' href="{$Path}{Pages::RESERVATION}?{QueryStringKeys::SOURCE_REFERENCE_NUMBER}={$ReferenceNumber}&{QueryStringKeys::REDIRECT}={$ReturnUrl|urlencode}">
+		{html_image src="calendar-copy.png"}
+		{translate key=DuplicateReservation}</a>
 
 {/block}
 
@@ -51,7 +53,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 			<img src="img/tick-circle.png" />
 			{translate key='Update'}
 		</button>
-		<div class="updateButtons" style="display:none;" title="{translate key=ApplyUpdatesTo}">
+		<div class="updateButtons hidden" title="{translate key=ApplyUpdatesTo}">
 			<div style="text-align: center;line-height:50px;">
 				<button type="button" class="button save btnUpdateThisInstance">
 					{html_image src="disk-black.png"}
@@ -76,6 +78,20 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 			<img src="img/disk-black.png" />
 			{translate key='Update'}
 		</button>
+        <div id="deleteButtonPrompt" class="dialog hidden" title="{translate key=Delete}">
+            <div>{translate key=DeleteReminderWarning}</div>
+            <div class="center">
+                <button type="button" class="button delete save">
+                    {html_image src="cross-button.png"}
+                    {translate key='Delete'}
+                </button>
+
+                <button id="cancelDelete" type="button" class="button cancel">
+                    {html_image src="slash.png"}
+                    {translate key='Cancel'}
+                </button>
+            </div>
+        </div>
 	{/if}
 	<button type="button" class="button btnPrint">
 		<img src="img/printer.png" />
@@ -89,7 +105,6 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 
 {block name='attachments'}
 <div style="clear:both">&nbsp;</div>
-
 	<div id="attachmentDiv" class="res-attachments">
 	<span class="heading">{translate key=Attachments} ({$Attachments|count})</span>
 	{if $Attachments|count > 0}

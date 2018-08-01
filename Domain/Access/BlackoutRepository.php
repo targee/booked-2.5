@@ -67,7 +67,7 @@ class BlackoutRepository implements IBlackoutRepository
 		return $seriesId;
 	}
 
-	private function AddSeries (BlackoutSeries $blackoutSeries)
+	private function AddSeries(BlackoutSeries $blackoutSeries)
 	{
 		$db = ServiceLocator::GetDatabase();
 		$seriesId = $db->ExecuteInsert(new AddBlackoutCommand($blackoutSeries->OwnerId(), $blackoutSeries->Title(), $blackoutSeries->RepeatType(), $blackoutSeries->RepeatConfigurationString()));

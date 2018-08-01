@@ -43,7 +43,12 @@ class BlackoutSeries
 	/**
 	 * @var Blackout[]
 	 */
-	protected $blackouts= array();
+	protected $blackouts = array();
+
+    /**
+     * @var int
+     */
+    protected $blackoutIteration = 0;
 
 	/**
 	 * @var string
@@ -212,16 +217,39 @@ class BlackoutSeries
 
 	public function AddBlackout(Blackout $blackout)
 	{
+        $this->blackoutIteration = 0;
+        $blackout->SetSeries($this);
 		$this->blackouts[$this->ToKey($blackout->Date())] = $blackout;
 	}
+
+    public function Delete(Blackout $blackout)
+    {
+        if (count($this->blackouts) <= 1)
+        {
+            Log::Debug('Only blackout in the series. Cannot delete. Id %s', $blackout->Id());
+            return false;
+        }
+        $key = $this->ToKey($blackout->Date());
+        $this->blackoutIteration = 0;
+        unset($this->blackouts[$key]);
+        $this->currentBlackoutInstanceId = null;
+
+        Log::Debug('Deleted blackout Id %s', $blackout->Id());
+        return true;
+    }
 
 	/**
 	 * @return Blackout[]
 	 */
 	public function AllBlackouts()
 	{
+        if (count($this->blackouts) == 0)
+        {
+            return array();
+        }
+
 		asort($this->blackouts);
-		return array_values($this->blackouts);
+		return $this->blackouts;
 	}
 
 	/**
@@ -356,6 +384,25 @@ class BlackoutSeries
 	{
 		return $this->currentBlackoutInstanceId;
 	}
+
+    /**
+     * @return Blackout|false
+     */
+    public function NextBlackout()
+    {
+        if ($this->blackoutIteration == 0)
+        {
+            $this->blackouts = $this->AllBlackouts();
+        }
+
+        if ($this->blackoutIteration < count($this->blackouts))
+        {
+            $keys = array_keys($this->blackouts);
+            return $this->blackouts[$keys[$this->blackoutIteration++]];
+        }
+
+        return false;
+    }
 }
 
 class Blackout
@@ -370,7 +417,12 @@ class Blackout
 	 */
 	protected $id;
 
-	/**
+    /**
+     * @var BlackoutSeries
+     */
+    protected $series;
+
+    /**
 	 * @param DateRange $blackoutDate
 	 */
 	public function __construct($blackoutDate)
@@ -402,6 +454,14 @@ class Blackout
 		return $this->date->GetEnd();
 	}
 
+    /**
+     * @param DateRange $date
+     */
+    public function SetDate(DateRange $date)
+    {
+        $this->date = $date;
+    }
+
 	/**
 	 * @param int $id
 	 */
@@ -417,6 +477,16 @@ class Blackout
 	{
 		return $this->id;
 	}
+
+    public function SetSeries(BlackoutSeries $blackoutSeries)
+    {
+        $this->series = $blackoutSeries;
+    }
+
+    public function GetSeries()
+    {
+        return $this->series;
+    }
 }
 
 class BlackoutResource implements IResource

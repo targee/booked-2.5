@@ -99,9 +99,10 @@ class SchedulesWebService
 	{
 		$startDate = $this->GetDate(WebServiceQueryStringKeys::START_DATE_TIME);
 		$endDate = $this->GetDate(WebServiceQueryStringKeys::END_DATE_TIME);
-		$resourceId = $this->server->GetQueryString(WebServiceQueryStringKeys::RESOURCE_ID);
 
-		$scheduleWebServiceView = new ScheduleWebServiceView($scheduleId, $startDate);
+        $resourceId = $this->server->GetQueryString(WebServiceQueryStringKeys::RESOURCE_ID);
+
+		$scheduleWebServiceView = new ScheduleWebServiceView($scheduleId, $startDate, $resourceId, $this->server->GetSession());
 		$permissionServiceFactory = new PermissionServiceFactory();
 		$scheduleRepository = new ScheduleRepository();
 		$userRepository = new UserRepository();
@@ -145,7 +146,11 @@ class SchedulesWebService
 
 class ScheduleWebServicePageBuilder extends SchedulePageBuilder
 {
-	public function __construct($startDate, $endDate, $resourceId)
+    private $startDate;
+    private $endDate;
+    private $resourceId;
+
+    public function __construct($startDate, $endDate, $resourceId)
 	{
 		$this->startDate = is_null($startDate) ? null : $startDate;
 		$this->endDate = is_null($endDate) ? null : $endDate;
@@ -167,9 +172,9 @@ class ScheduleWebServicePageBuilder extends SchedulePageBuilder
 		// no op
 	}
 
-	public function GetResourceIds($scheduleId, ISchedulePage $page)
+    public function GetResourceIds($scheduleId, ISchedulePage $page)
 	{
-		return $this->resourceId;
+		return array($this->resourceId);
 	}
 
 	public function BindResourceFilter(ISchedulePage $page, ScheduleResourceFilter $filter, $resourceCustomAttributes, $resourceTypeCustomAttributes)
@@ -214,11 +219,28 @@ class ScheduleWebServiceView implements ISchedulePage
 	 */
 	private $resources;
 
-	public function __construct($scheduleId, $startDate)
+
+    private $resourceId;
+
+    private $startDate;
+    /**
+     * @var
+     */
+    private $userSession;
+
+    /**
+     * @param int $scheduleId
+     * @param Date $startDate
+     * @param int $resourceId
+     * @param WebServiceUserSession $userSession
+     */
+    public function __construct($scheduleId, $startDate, $resourceId, $userSession)
 	{
 		$this->scheduleId = $scheduleId;
 		$this->startDate = $startDate;
-	}
+        $this->resourceId = $resourceId;
+        $this->userSession = $userSession;
+    }
 
 	public function SetSchedules($schedules)
 	{
@@ -272,7 +294,7 @@ class ScheduleWebServiceView implements ISchedulePage
 
 	public function GetSelectedDate()
 	{
-		return empty($this->startDate) ? null : $this->startDate->Format("Y-m-d");
+		return empty($this->startDate) ? null : $this->startDate->ToTimezone($this->userSession->Timezone)->Format("Y-m-d");
 	}
 
 	public function GetSelectedDates()
@@ -333,7 +355,7 @@ class ScheduleWebServiceView implements ISchedulePage
 	 */
 	public function GetResourceIds()
 	{
-		return array();
+		return array($this->resourceId);
 	}
 
 	public function SetResourceGroupTree(ResourceGroupTree $resourceGroupTree)
@@ -358,7 +380,7 @@ class ScheduleWebServiceView implements ISchedulePage
 
 	public function FilterSubmitted()
 	{
-		return false;
+		return !empty($this->scheduleId) || !empty($this->resourceId);
 	}
 
 	public function GetResourceTypeId()
@@ -373,12 +395,12 @@ class ScheduleWebServiceView implements ISchedulePage
 
 	public function GetResourceAttributes()
 	{
-		return null;
+		return array();
 	}
 
 	public function GetResourceTypeAttributes()
 	{
-		return null;
+		return array();
 	}
 
 	public function SetFilter($resourceFilter)

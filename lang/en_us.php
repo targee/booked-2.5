@@ -448,7 +448,7 @@ class en_us extends Language
 		$strings['ReminderSendtimeTime'] = 'Time of Reminder (HH:MM)';
 		$strings['ReminderSendtimeAMPM'] = 'AM / PM';
 		$strings['AddReminder'] = 'Add Reminder';
-		$strings['DeleteReminderWarning'] = 'You sure about this?';
+		$strings['DeleteReminderWarning'] = 'Are you sure you want to delete this?';
 		$strings['NoReminders'] = 'You have no upcoming reminders.';
 		$strings['Reminders'] = 'Reminders';
 		$strings['SendReminder'] = 'Send Reminder';
@@ -518,6 +518,8 @@ class en_us extends Language
 		$strings['IcsLocationsAsResources'] = 'Locations will be imported as resources.';
 		$strings['IcsMissingOrganizer'] = 'Any event missing an organizer will have the owner set to the current user.';
 		$strings['IcsWarning'] = 'Reservation rules will not be enforced - conflicts, duplicates, etc are possible.';
+		$strings['DuplicateReservation'] = 'Duplicate Reservation';
+		$strings['BlackoutAroundConflicts'] = 'Blackout around conflicting reservations';
 		// End Strings
 
 		// Install

@@ -27,6 +27,17 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 </tr>
 {/function}
 
+{function name=dashboardReservationsHeaders}
+    {if !empty($items)}
+        <tr class="headers">
+            <td>{translate key=Title}</td>
+            <td>{translate key=User}</td>
+            <td>{translate key=BeginDate}</td>
+            <td>{translate key=EndDate}</td>
+            <td>{translate key=Resource}</td>
+        </tr>
+    {/if}
+{/function}
 
 <div class="dashboard upcomingReservationsDashboard" id="upcomingReservationsDashboard">
 	<div class="dashboardHeader">
@@ -39,6 +50,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 			<tr class="timespan">
 				<td colspan="{$colspan}">{translate key="Today"} ({$TodaysReservations|count})</td>
 			</tr>
+            {dashboardReservationsHeaders items=$TodaysReservations}
 			{foreach from=$TodaysReservations item=reservation}
                 {displayReservation reservation=$reservation}
 			{/foreach}
@@ -46,21 +58,24 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 			<tr class="timespan">
 				<td colspan="{$colspan}">{translate key="Tomorrow"} ({$TomorrowsReservations|count})</td>
 			</tr>
-			{foreach from=$TomorrowsReservations item=reservation}
+            {dashboardReservationsHeaders items=$TomorrowsReservations}
+            {foreach from=$TomorrowsReservations item=reservation}
                 {displayReservation reservation=$reservation}
 			{/foreach}
 
 			<tr class="timespan">
 				<td colspan="{$colspan}">{translate key="LaterThisWeek"} ({$ThisWeeksReservations|count})</td>
 			</tr>
-			{foreach from=$ThisWeeksReservations item=reservation}
+            {dashboardReservationsHeaders items=$ThisWeeksReservations}
+            {foreach from=$ThisWeeksReservations item=reservation}
                 {displayReservation reservation=$reservation}
 			{/foreach}
 
 			<tr class="timespan">
 				<td colspan="{$colspan}">{translate key="NextWeek"} ({$NextWeeksReservations|count})</td>
 			</tr>
-			{foreach from=$NextWeeksReservations item=reservation}
+            {dashboardReservationsHeaders items=$NextWeeksReservations}
+            {foreach from=$NextWeeksReservations item=reservation}
                 {displayReservation reservation=$reservation}
 			{/foreach}
 		</table>

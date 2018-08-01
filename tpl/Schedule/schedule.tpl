@@ -27,20 +27,20 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 		{assign var=color value='style="background-color:'|cat:$Slot->Color()|cat:';color:'|cat:$Slot->TextColor()|cat:';"'}
 	{/if}
 	<td {$spantype|default:'col'}span="{$Slot->PeriodSpan()}" class="reserved {$class} {$OwnershipClass} clickres slot"
-		resid="{$Slot->Id()}" {$color}
+		resid="{$Slot->Id()}" {$color} {if $Draggable}draggable="true"{/if} data-resourceId="{$ResourceId}"
 		id="{$Slot->Id()}|{$Slot->Date()->Format('Ymd')}">{$Slot->Label($SlotLabelFactory)|escapequotes}</td>
 {/function}
 
 {function name=displayMyReserved}
-	{call name=displayGeneralReserved Slot=$Slot Href=$Href SlotRef=$SlotRef OwnershipClass='mine'}
+	{call name=displayGeneralReserved Slot=$Slot Href=$Href SlotRef=$SlotRef OwnershipClass='mine' Draggable=true ResourceId=$ResourceId}
 {/function}
 
 {function name=displayMyParticipating}
-	{call name=displayGeneralReserved Slot=$Slot Href=$Href SlotRef=$SlotRef OwnershipClass='participating'}
+	{call name=displayGeneralReserved Slot=$Slot Href=$Href SlotRef=$SlotRef OwnershipClass='participating' ResourceId=$ResourceId}
 {/function}
 
 {function name=displayReserved}
-	{call name=displayGeneralReserved Slot=$Slot Href=$Href SlotRef=$SlotRef OwnershipClass=''}
+	{call name=displayGeneralReserved Slot=$Slot Href=$Href SlotRef=$SlotRef OwnershipClass='' ResourceId=$ResourceId}
 {/function}
 
 {function name=displayPastTime}
@@ -49,7 +49,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 {/function}
 
 {function name=displayReservable}
-	<td {$spantype|default:'col'}span="{$Slot->PeriodSpan()}" ref="{$SlotRef}" class="reservable clickres slot" data-href="{$Href}" data-start="{$Slot->BeginDate()->Format('Y-m-d H:i:s')|escape:url}" data-end="{$Slot->EndDate()->Format('Y-m-d H:i:s')|escape:url}">&nbsp;</td>
+	<td {$spantype|default:'col'}span="{$Slot->PeriodSpan()}" ref="{$SlotRef}" class="reservable clickres slot" data-href="{$Href}" data-start="{$Slot->BeginDate()->Format('Y-m-d H:i:s')|escape:url}" data-end="{$Slot->EndDate()->Format('Y-m-d H:i:s')|escape:url}" data-resourceId="{$ResourceId}">&nbsp;</td>
 {/function}
 
 {function name=displayRestricted}
@@ -62,13 +62,13 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 {/function}
 
 {function name=displaySlot}
-	{call name=$DisplaySlotFactory->GetFunction($Slot, $AccessAllowed) Slot=$Slot Href=$Href SlotRef=$SlotRef}
+	{call name=$DisplaySlotFactory->GetFunction($Slot, $AccessAllowed) Slot=$Slot Href=$Href SlotRef=$SlotRef ResourceId=$ResourceId}
 {/function}
 
 {* End slot display formatting *}
 
 {block name="header"}
-	{include file='globalheader.tpl' cssFiles='css/jquery.qtip.min.css,scripts/css/jqtree.css,css/schedule.css' printCssFiles='css/schedule-print.css'}
+	{include file='globalheader.tpl' cssFiles='css/jquery.qtip.min.css,scripts/css/jqtree.css,css/schedule.css,scripts/css/colorbox.css' printCssFiles='css/schedule-print.css'}
 {/block}
 
 {if $ShowResourceWarning}
@@ -174,6 +174,12 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 			<div class="advancedFilterTitle">{translate key=AdvancedFilter}</div>
 			<hr/>
 
+            {if count($ResourceAttributes) + count($ResourceTypeAttributes) > 5}
+                <div>
+                    <input type="submit" value="{translate key=Filter}" class="button" {formname key=SUBMIT}/>
+                </div>
+            {/if}
+
 			<div>
 					<div id="resourceGroups"></div>
 					</div>
@@ -246,7 +252,7 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 						</td>
 						{foreach from=$slots item=slot}
 							{assign var=slotRef value="{$slot->BeginDate()->Format('YmdHis')}{$resourceId}"}
-							{displaySlot Slot=$slot Href="$href" AccessAllowed=$resource->CanAccess SlotRef=$slotRef}
+							{displaySlot Slot=$slot Href="$href" AccessAllowed=$resource->CanAccess SlotRef=$slotRef ResourceId=$resourceId}
 						{/foreach}
 					</tr>
 				{/foreach}
@@ -260,8 +266,22 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 	<div class="error">{translate key=NoResourcePermission}</div>
 {/if}
 
+<form id="moveReservationForm">
+	<input id="moveReferenceNumber" type="hidden" {formname key=REFERENCE_NUMBER} />
+	<input id="moveStartDate" type="hidden" {formname key=BEGIN_DATE} />
+	<input id="moveResourceId" type="hidden" {formname key=RESOURCE_ID} />
+	<input id="moveSourceResourceId" type="hidden" {formname key=ORIGINAL_RESOURCE_ID} />
+	{csrf_token}
+</form>
+
+
 <div class="clear">&nbsp;</div>
 <input type="hidden" value="{$ScheduleId}" id="scheduleId"/>
+
+<div id="modalDiv" style="display:none;text-align:center; top:15%;position:relative;">
+	<h3>{translate key=Working}</h3>
+	{html_image src="reservation_submitting.gif"}
+</div>
 
 {$smarty.capture.date_navigation}
 
@@ -276,6 +296,8 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 	{jsfile src="resourcePopup.js"}
 	{jsfile src="js/tree.jquery.js"}
 	{jsfile src="js/jquery.cookie.js"}
+	{jsfile src="ajax-helpers.js"}
+	{jsfile src="js/jquery.colorbox-min.js"}
 
 	<script type="text/javascript">
 
@@ -289,7 +311,8 @@ along with Booked Scheduler.  If not, see <http://www.gnu.org/licenses/>.
 				scheduleId:"{$ScheduleId}",
 				scriptUrl: '{$ScriptUrl}',
 				selectedResources: [{','|implode:$ResourceIds}],
-				specificDates:  [{foreach from=$SpecificDates item=d}'{$d->Format('Y-m-d')}',{/foreach}]
+				specificDates:  [{foreach from=$SpecificDates item=d}'{$d->Format('Y-m-d')}',{/foreach}],
+				updateReservationUrl: "{$Path}ajax/reservation_move.php"
 			};
 
 			var schedule = new Schedule(scheduleOpts, {$ResourceGroupsAsJson});

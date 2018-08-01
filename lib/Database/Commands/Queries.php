@@ -302,7 +302,8 @@ class Queries
           WHERE ug.user_id = @userid AND g.admin_group_id IS NOT NULL)';
 
 	const GET_ALL_GROUP_USERS =
-			'SELECT *
+			'SELECT u.*, (SELECT GROUP_CONCAT(CONCAT(cav.custom_attribute_id, \'=\', cav.attribute_value) SEPARATOR "!sep!")
+						FROM custom_attribute_values cav WHERE cav.entity_id = u.user_id AND cav.attribute_category = 2) as attribute_list
 		FROM users u
 		WHERE u.user_id IN (
 		  SELECT DISTINCT (ug.user_id) FROM user_groups ug
@@ -741,7 +742,8 @@ const GET_RESERVATION_LIST_TEMPLATE =
 				r.resource_id = @resourceid AND r.resource_id = grp.resource_id AND g.group_id = grp.group_id';
 
 	const GET_RESOURCE_USER_PERMISSION = 'SELECT
-				u.*
+				u.*, (SELECT GROUP_CONCAT(CONCAT(cav.custom_attribute_id, \'=\', cav.attribute_value) SEPARATOR "!sep!")
+						FROM custom_attribute_values cav WHERE cav.entity_id = u.user_id AND cav.attribute_category = 2) as attribute_list
 			FROM
 				user_resource_permissions urp, resources r, users u
 			WHERE

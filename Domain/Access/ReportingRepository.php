@@ -73,8 +73,10 @@ class ReportingRepository implements IReportingRepository
 		$rows = array();
 		while ($row = $reader->GetRow())
 		{
+			$row[ColumnNames::DURATION_HOURS] = round($row[ColumnNames::DURATION_ALIAS]/3600, 2);
 			$rows[] = $row;
 		}
+
 		$reader->Free();
 
 		return $rows;

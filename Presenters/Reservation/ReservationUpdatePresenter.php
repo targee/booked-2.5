@@ -36,6 +36,10 @@ interface IReservationUpdatePresenter
 class ReservationUpdatePresenter implements IReservationUpdatePresenter
 {
 	/**
+	 * @var UserSession
+	 */
+	private $userSession;
+	/**
 	 * @var IReservationUpdatePage
 	 */
 	private $page;

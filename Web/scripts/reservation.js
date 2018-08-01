@@ -41,7 +41,8 @@ function Reservation(opts)
 		addResourcesButton: $('#btnAddResources'),
 		resourceGroupsDialog: $('#dialogResourceGroups'),
 		addResourcesConfirm:$('.btnConfirmAddResources'),
-		reservationAttachments:$('#reservationAttachments')
+		reservationAttachments:$('#reservationAttachments'),
+        deleteButtonPrompt: $('#deleteButtonPrompt')
 	};
 
 	var participation = {};
@@ -153,6 +154,17 @@ function Reservation(opts)
 			ChangeUpdateScope(options.scopeOpts.future);
 		});
 
+        $('#triggerDeletePrompt').click(function(e){
+            e.preventDefault();
+            elements.deleteButtonPrompt.dialog('open');
+        });
+
+        $('#cancelDelete').click(function (e)
+        {
+            e.preventDefault();
+            elements.deleteButtonPrompt.dialog('close');
+        });
+        
 		InitializeDateElements();
 
 		WireUpActions();

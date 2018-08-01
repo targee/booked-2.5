@@ -64,6 +64,7 @@ class QueryStringKeys
 	const RESERVATION_RESOURCE_REASON_ID = 'rrsrid';
 	const SCHEDULE_ID = 'sid';
 	const SHOW_FULL_WEEK = 'sfw';
+	const SOURCE_REFERENCE_NUMBER = 'srn';
 	const START_DATE = 'sd';
 	const START_DATES = 'sds';
     const SUBSCRIPTION_KEY = 'icskey';

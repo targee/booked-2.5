@@ -45,6 +45,7 @@ class WebServices
 	const GetReservation = 'get_reservation';
 	const GetResource = 'get_resource';
 	const GetResourceAvailability = 'get_resource_availability';
+	const GetResourceGroups = 'get_resource_groups';
 	const GetSchedule = 'get_schedule';
 	const GetScheduleSlots = 'get_schedule_reservations';
 	const GetUser = 'get_user';

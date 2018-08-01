@@ -24,7 +24,7 @@ PRODID:-//BookedScheduler//NONSGML {$bookedVersion}//EN
 BEGIN:VEVENT
 CLASS:PUBLIC
 CREATED:{formatdate date=$reservation->DateCreated key=ical}
-DESCRIPTION:{$reservation->Description|regex_replace:"/\r\n|\n|\r/m":"\n "}
+DESCRIPTION:{$reservation->Description|regex_replace:"/\r\n|\n|\r/m":"\\n "}
 DTSTAMP:{formatdate date=$reservation->DateCreated key=ical}
 DTSTART:{formatdate date=$reservation->DateStart key=ical}
 DTEND:{formatdate date=$reservation->DateEnd key=ical}

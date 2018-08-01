@@ -113,6 +113,7 @@ class FormKeys
 	const NOTES = 'notes';
 
 	const ORGANIZATION = 'organization';
+	const ORIGINAL_RESOURCE_ID = 'ORIGINAL_RESOURCE_ID';
 
 	const PARENT_ID = 'PARENT_ID';
 	const PARTICIPANT_LIST = 'participantList';
